@@ -24,8 +24,12 @@ def file_process(config: Config, file: str, shared_memory: list[SharedMemory],
                  semaphores: list[Semaphore], init_event: Event, init_memory_index: int = 0):
     logger = logging.getLogger(__name__)
     setup_logger("logs/file_process.log")
+    # lock memory 0 for setup
+    semaphores[init_memory_index].acquire()
+    # init camera
     cam_config = config.camera_configs[config.serial_numbers[1]]
     worker = FileFrameProvider(file, cam_config)
+    # init memory 0 for setup
     worker_memory_array: np.ndarray = np.ndarray(
         (cam_config.device_settings.roi_height, cam_config.device_settings.roi_width, 3),
         dtype=np.uint8,
@@ -33,23 +37,16 @@ def file_process(config: Config, file: str, shared_memory: list[SharedMemory],
     )
     logger.debug(f"Setup shared memory, {init_memory_index}.")
     current_memory_index = init_memory_index
+    # get init image
     results = worker.run()
+    # set memory to init image
     worker_memory_array[:] = results[0]
-    semaphores[current_memory_index].release()
-    logger.debug(f"Released semaphore {current_memory_index} for init.")
-    current_memory_index = 1 if init_memory_index == 0 else 0
-    semaphores[current_memory_index].acquire()
-    logger.debug(f"Acquired semaphore {current_memory_index} for init, waiting 0.5 seconds.")
     init_event.set()
+    logger.debug("Set the init event to signal finished setup of file_process, waiting for 0.5 seconds.")
     time.sleep(0.5)
     memory_access_count = 0
     while True:
         start = time.time()
-        results = worker.run()
-        frame_number = results[1]
-        worker_memory_array[:] = results[0]
-        logger.debug(f"Filled memory {current_memory_index} with frame {frame_number}.")
-        time.sleep(0.5)
         if current_memory_index == 0:
             memory_access_count += 1
             if semaphores[1].acquire(timeout=0.001):
@@ -76,6 +73,11 @@ def file_process(config: Config, file: str, shared_memory: list[SharedMemory],
                     buffer=shared_memory[1].buf,
                 )
                 memory_access_count = 0
+        results = worker.run()
+        frame_number = results[1]
+        worker_memory_array[:] = results[0]
+        logger.debug(f"Filled memory {current_memory_index} with frame {frame_number}.")
+        # time.sleep(0.01)
         end = time.time()
         logger.debug(
             f"Finished filling and switching memory {current_memory_index}, took {end - start} seconds, "
@@ -167,48 +169,56 @@ def consumer_process(
     cam_config = config.camera_configs[config.serial_numbers[1]]
     logger = logging.getLogger(__name__)
     setup_logger("logs/consumer_process.log")
-    while not semaphores[init_memory_index].acquire(timeout=0.01):
-        time.sleep(0.001)
+    # get the semaphore for the initial memory
+    semaphores[init_memory_index].acquire(block=True)
     logger.debug(f"Acquired semaphore {init_memory_index} for init.")
+    # set memory 0 for init
     consumer_memory_array: np.ndarray = np.ndarray(
         (cam_config.device_settings.roi_height, cam_config.device_settings.roi_width, 3),
         dtype=np.uint8,
         buffer=shared_memory[init_memory_index].buf,
     )
     current_memory_index = init_memory_index
+    # copy data of shared memory
     image = consumer_memory_array.copy()
+    # put first image index = 0 still
     out_queue.put(image)
+    # signal finished setup
     init_event.set()
     while True:
         start = time.time()
+        if current_memory_index == 0:
+            semaphores[0].release()
+            if semaphores[1].acquire(block=True):
+                logger.debug("Acquired semaphore 1.")
+                logger.debug("Released semaphore 0.")
+                current_memory_index = 1
+                consumer_memory_array = np.ndarray(
+                    (cam_config.device_settings.roi_height, cam_config.device_settings.roi_width, 3),
+                    dtype=np.uint8,
+                    buffer=shared_memory[1].buf,
+                )
+            else:
+                semaphores[0].acquire()
+        elif current_memory_index == 1:
+            semaphores[1].release()
+            if semaphores[0].acquire(block=True):
+                logger.debug("Acquired semaphore 0.")
+                logger.debug("Released semaphore 1.")
+                current_memory_index = 0
+                consumer_memory_array = np.ndarray(
+                    (cam_config.device_settings.roi_height, cam_config.device_settings.roi_width, 3),
+                    dtype=np.uint8,
+                    buffer=shared_memory[1].buf,
+                )
+            else:
+                semaphores[1].acquire()
         image = consumer_memory_array.copy()
         logger.debug(f"Got image from shared memory {current_memory_index}.")
         # time.sleep(0.)
         image = cv2.resize(image, None, fx=0.5, fy=0.5)
         out_queue.put(image)
-        logger.debug(f"Finished processing memory {current_memory_index}, trying to switch semaphore.")
-        if current_memory_index == 0:
-            semaphores[1].acquire()
-            logger.debug("Acquired semaphore 1.")
-            semaphores[0].release()
-            logger.debug("Released semaphore 0.")
-            current_memory_index = 1
-            consumer_memory_array = np.ndarray(
-                (cam_config.device_settings.roi_height, cam_config.device_settings.roi_width, 3),
-                dtype=np.uint8,
-                buffer=shared_memory[1].buf,
-            )
-        elif current_memory_index == 1:
-            semaphores[0].acquire()
-            logger.debug("Acquired semaphore 0.")
-            semaphores[1].release()
-            logger.debug("Released semaphore 1.")
-            current_memory_index = 0
-            consumer_memory_array = np.ndarray(
-                (cam_config.device_settings.roi_height, cam_config.device_settings.roi_width, 3),
-                dtype=np.uint8,
-                buffer=shared_memory[1].buf,
-            )
+        time.sleep(0.1)
         end = time.time()
         logger.debug(f"Finished processing memory {current_memory_index}, took {end - start} seconds.")
 
@@ -236,6 +246,9 @@ def main_process_single():
         memory_test = SharedMemory(name="image_memory_0", create=False)
         memory_test.close()
         memory_test.unlink()
+    except:
+        pass
+    try:
         memory_test = SharedMemory(name="image_memory_1", create=False)
         memory_test.close()
         memory_test.unlink()

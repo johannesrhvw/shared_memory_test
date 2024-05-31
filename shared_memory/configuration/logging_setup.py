@@ -9,7 +9,7 @@ def setup_logger(filename: str) -> None:
     root = logging.getLogger()
     file_handler = logging.FileHandler(filename, mode="a")
     console_handler = logging.StreamHandler()
-    formatter = logging.Formatter("%(threadName)s %(filename)s %(funcName)-4s %(message)s")
+    formatter = logging.Formatter("%(asctime)-4s %(message)s")
     file_handler.setFormatter(formatter)
     console_handler.setFormatter(formatter)
     root.addHandler(file_handler)
