@@ -1,0 +1,69 @@
+# {05D8C294-F295-4dfb-9D01-096BD04049F4}
+# GenApi persistence file (version 3.4.1)
+# Device = IDS_Imaging_Development_Systems_GmbH::U3_33Fx_C --  -- Device version = 3.30.0 -- Product GUID = 563221f0-bd52-ac17-e07a-2d4657e2cf9b -- Product version GUID = b55acfe2-7b99-7d77-db6c-75222cc37475
+DecimationHorizontal	{DecimationSelector=Sensor}	1
+DecimationSelector	Sensor
+DecimationVertical	{DecimationSelector=Sensor}	1
+DecimationSelector	Sensor
+SensorPixelSize	Bpp8
+Width	2472
+Height	2062
+OffsetX	0
+OffsetY	0
+TestPattern	Off
+PixelFormat	{ComponentSelector=Intensity}	BayerRG8
+ComponentSelector	Intensity
+ReverseX	0
+ReverseY	0
+AcquisitionMode	Continuous
+AcquisitionFrameCount	1
+SensorFrameTimeClocksTarget	3712500
+AcquisitionFrameRateTargetEnable	0
+TriggerMode	{TriggerSelector=FrameStart}	Off
+TriggerMode	{TriggerSelector=ExposureStart}	Off
+TriggerSelector	ExposureStart
+TriggerSource	{TriggerSelector=FrameStart}	Software
+TriggerSource	{TriggerSelector=ExposureStart}	Software
+TriggerSelector	ExposureStart
+TriggerActivation	{TriggerSelector=FrameStart}	RisingEdge
+TriggerActivation	{TriggerSelector=ExposureStart}	RisingEdge
+TriggerSelector	ExposureStart
+TriggerDelay	{TriggerSelector=FrameStart}	0
+TriggerDelay	{TriggerSelector=ExposureStart}	0
+TriggerSelector	ExposureStart
+TriggerDivider	{TriggerSelector=FrameStart}	1
+TriggerDivider	{TriggerSelector=ExposureStart}	1
+TriggerSelector	ExposureStart
+SensorExposureTimeClocks	3120282
+SensorFrameTimeClocks	14849568
+SensorOperationModeRaw	Default
+DeviceLinkThroughputLimit	200000000
+EventNotification	{EventSelector=Error}	Off
+EventNotification	{EventSelector=CriticalError}	On
+EventNotification	{EventSelector=EventDropped}	On
+EventSelector	EventDropped
+LEDTriggerSource	{LEDSelector=LEDStatus}	CameraStatus
+LEDSelector	LEDStatus
+LineMode	{LineSelector=Line2}	Input
+LineMode	{LineSelector=Line3}	Input
+LineSelector	Line0
+LineInverter	{LineSelector=Line2}	0
+LineInverter	{LineSelector=Line3}	0
+LineSelector	Line0
+UserOutputValue	{UserOutputSelector=UserOutput0}	0
+UserOutputValue	{UserOutputSelector=UserOutput1}	0
+UserOutputValue	{UserOutputSelector=UserOutput2}	0
+UserOutputValue	{UserOutputSelector=UserOutput3}	0
+UserOutputSelector	UserOutput0
+LineSource	{LineSelector=Line2}	Off
+LineSource	{LineSelector=Line3}	Off
+LineSelector	Line0
+ADCGainCorrection	{GainSelector=AnalogAll}	1
+GainSelector	AnalogAll
+Gain	{GainSelector=AnalogAll}	1
+GainSelector	AnalogAll
+BlackLevelInt	0
+BlackLevelAuto	ContinuousWithOffset
+ChunkModeActive	1
+ChunkEnable	{ChunkSelector=UsableROI}	1
+ChunkSelector	UsableROI

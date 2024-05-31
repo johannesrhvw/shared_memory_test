@@ -1,0 +1,138 @@
+{
+    "general": {
+        "consumer": {
+            "consumer_interval": 0.4,
+            "yolo_segmentation_inference_settings": {
+                "model_path": "data/best_potato_seg_yolov8n_ep100_bs4.pt",
+                "input_width": 1280,
+                "input_height": 1280,
+                "confidence_threshold": 0.7,
+                "iou_threshold": 0.5,
+                "half": false,
+                "retina_masks": false
+            },
+            "yolo_classification_inference_settings": {
+                "batch_size": 5,
+                "number_of_workers": 5,
+                "model_path": "data/best_yolov8n-cls.pt",
+                "input_width": 640,
+                "input_height": 640,
+                "confidence_threshold": 0.7,
+                "iou_threshold": 0.5,
+                "half": false
+            },
+            "norfair_tracker_settings": {
+                "track_points" : "euclidean",
+                "distance_function" : "euclidean",
+                "distance_threshold" : 0.5,
+                "hit_counter_max" : 5,
+                "initialization_delay": 2,
+                "pointwise_hit_counter_max" : 0,
+                "detection_threshold" : 0,
+                "past_detections_length" : 0
+            },
+            "object_region_of_interest": {
+                "margin_top": 0.01,
+                "margin_bottom": 0.99,
+                "margin_left": 0.01,
+                "margin_right": 0.99
+            }
+        },
+        "sorter":{
+            "sort_interval": 0.01,
+            "paddle_width": 2.5,
+            "sort_line": 0.7,
+            "distance_line_to_sorter": 10,
+            "ip_address": "192.168.1.190",
+            "active_valve_time": 0.5
+        }
+    },
+    "camera_0":{
+        "camera_position_id": 1,
+        "camera_serial_number": "4108691762",
+        "camera_device_settings": {
+            "exposure": 12000.0,
+            "fps": 0.5,
+            "roi_width": 2472,
+            "roi_height": 2062,
+            "x_offset": 0,
+            "y_offset": 0,
+            "ids_cset_file": "config/camera_settings.cset"
+        },
+        "camera_postprocessing_settings": {
+            "gain_red": 2.18,
+            "gain_green": 1.0,
+            "gain_blue": 2.14,
+            "color_matrix":{
+                "RedRed": 1.6094,
+                "RedGreen": -0.4648,
+                "RedBlue": -0.1406,
+                "GreenRed": -0.4492,
+                "GreenGreen": 1.9375,
+                "GreenBlue": -0.4883,
+                "BlueRed": 0.0859,
+                "BlueGreen": -0.6055,
+                "BlueBlue": 1.5195},
+            "saturation": 1.0,
+            "gamma": 1.0
+        },
+        "camera_field_of_view_transformer_settings": {
+            "target_fov":{
+                "x_offset": 35,
+                "y_offset": 0,
+                "width": 45,
+                "height": 38
+            },
+            "source_fov": {
+                "x_offset": 0,
+                "y_offset": 0,
+                "width": 2472,
+                "height": 2062
+            }
+        }
+    },
+    "camera_1":{
+        "camera_position_id": 0,
+        "camera_serial_number": "4108691763",
+        "camera_device_settings": {
+            "exposure": 12000.0,
+            "fps": 0.5,
+            "roi_width": 2472,
+            "roi_height": 2062,
+            "x_offset": 0,
+            "y_offset": 0,
+            "ids_cset_file": "config/camera_settings.cset"
+        },
+        "camera_postprocessing_settings": {
+            "gain_red": 2.18,
+            "gain_green": 1.0,
+            "gain_blue": 2.14,
+            "color_matrix":{
+                "RedRed":       1.6094,
+                "RedGreen":     -0.4648,
+                "RedBlue":       -0.1406,
+                "GreenRed":     -0.4492,
+                "GreenGreen":   1.9375,
+                "GreenBlue":     -0.4883,
+                "BlueRed":      0.0859,
+                "BlueGreen":     -0.6055,
+                "BlueBlue":      1.5195},
+            "saturation": 1.0,
+            "gamma": 1.0
+        },
+        "camera_field_of_view_transformer_settings": {
+            "target_fov":{
+                "x_offset": 0,
+                "y_offset": 0,
+                "width": 45,
+                "height": 38
+            },
+            "source_fov": {
+                "x_offset": 0,
+                "y_offset": 0,
+                "width": 2472,
+                "height": 2062
+            }
+        }
+    }
+}
